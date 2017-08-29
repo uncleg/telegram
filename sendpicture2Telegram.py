@@ -14,23 +14,47 @@ chat_id=config.getint('Telegram','chat_id')
 
 
 #setting other variables
-pid=0
+global p
 
 #@authenticate
+'''
 def start(bot, update):
 	if update.message.chat_id == chat_id: 
 		update.message.reply_text('Welcome')
 	else:
 		update.message.reply_text('Sorry. Action not allowed for you')
     	print "Access not allowed"+update.message.chat_id
-
-def inicio(bot, update):
+'''
+def start(bot, update):
 	if update.message.chat_id == chat_id: 
-		update.message.reply_text('Starting BotAlarm')
+		update.message.reply_text('Starting sensorCAM...')
 		#p = subprocess.Popen(["python","/home/pi/Arduino/just-sensoring-telegram.py"],stdout=subprocess.PIPE)
+		global p
 		p = subprocess.Popen(["python","printing.py"],stdout=subprocess.PIPE)
 		update.message.reply_text(p.pid)
-		pid=p.pid
+	else:
+		update.message.reply_text('Sorry. Action not allowed for you')
+    	print "Access not allowed"+update.message.chat_id
+
+def stop(bot, update):
+	global p
+	if update.message.chat_id == chat_id: 
+		update.message.reply_text('Stopping sensorCAM...')
+		#p.kill()
+		p.terminate()
+	else:
+		update.message.reply_text('Sorry. Action not allowed for you')
+    	print "Access not allowed"+update.message.chat_id
+
+def status(bot, update):
+	global p
+	if update.message.chat_id == chat_id: 
+		update.message.reply_text('sensorCAM Status:')
+		if p.poll() == None:
+			update.message.reply_text('sensorCAM Alive with PID:')
+			update.message.reply_text(p.pid)
+		else: 
+			update.message.reply_text('sensorCAM is NOT Alive')
 	else:
 		update.message.reply_text('Sorry. Action not allowed for you')
     	print "Access not allowed"+update.message.chat_id
@@ -49,12 +73,9 @@ def hello(bot, update):
 def capture(bot, update):
     cantidad=5
     if update.message.chat_id == chat_id:
-		for i in range(cantidad):
-			imagen="evento_on-demand_image-"+strftime("%d%b%Y-%H:%M:%S", gmtime())+".jpg"
-#		camera.capture(imagen)
-			sleep(1)
-			update.send_message(chat_id=chat_id, text="Sending images...")
-			#update.send_photo(chat_id=chat_id, photo=open(imagen, 'rb'))
+		stop()
+		status()
+		start()	
     else:
 		update.message.reply_text('Sorry. Action not allowed for you')
 		print "Access not allowed"+update.message.chat_id
@@ -66,10 +87,12 @@ updater = Updater(token)
 
 
 updater.dispatcher.add_handler(CommandHandler('start', start))
-updater.dispatcher.add_handler(CommandHandler('inicio', inicio))
+#updater.dispatcher.add_handler(CommandHandler('inicio', inicio))
+updater.dispatcher.add_handler(CommandHandler('stop', stop))
+updater.dispatcher.add_handler(CommandHandler('status', status))
 updater.dispatcher.add_handler(CommandHandler('hello', hello))
 updater.dispatcher.add_handler(CommandHandler('capture', capture))
-print pid
+
 updater.start_polling()
 updater.idle()
 
