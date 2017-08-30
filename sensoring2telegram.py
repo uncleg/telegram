@@ -5,7 +5,6 @@ import json
 import telegram
 import picamera
 import ConfigParser
-import logging
 
 ser = serial.Serial('/dev/ttyACM0', 115200)
 camera = picamera.PiCamera()
@@ -16,20 +15,19 @@ eventID=0
 config = ConfigParser.ConfigParser()
 config.read("/etc/sensorCAM/sensorCAM.conf")
 token=config.get('Telegram','token')
-chat_id=config.getint('Telegram','chat_id')
+chat_id=config.get('Telegram','chat_id').split(',')
 
+bot = telegram.Bot(token=token)
 
 def capture(cantidad, evento=0):
     i=0
     imagenes = []
-	for i in range(cantidad):
+    for i in range(cantidad):
 		imagen="evento_"+str(evento)+"_image-"+strftime("%d%b%Y-%H:%M:%S", gmtime())+".jpg"
-        imagenes.append(imagen)
+                imagenes.append(imagen)
 		camera.capture(imagen)
 		sleep(2)
     return imagenes[2]
-
-
 
 try:
     print "PIR Module Test (CTRL+C to exit)"
@@ -48,8 +46,8 @@ try:
                         data['stop']=stop_time 
                         json_data = json.dumps(data)
                         mensaje_a_telegram=data['Description']+"Incio:"+data['start']+" Fin:"+data['stop']
-                        bot.send_message(chat_id=chat_id, text=mensaje_a_telegram)
-                        bot.send_photo(chat_id=chat_id, photo=open(imagen_telegram, 'rb'))
+                        bot.send_message(chat_id=chat_id[0], text=mensaje_a_telegram)
+                        bot.send_photo(chat_id=chat_id[0], photo=open(imagen_telegram, 'rb'))
 
 except KeyboardInterrupt:
         print "Exit PIR Sensoring..."	

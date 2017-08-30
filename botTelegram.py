@@ -31,10 +31,8 @@ def help(bot, update):
 def up_sensor(bot, update):
 	if str(update.message.chat_id) in chat_id: 
 		update.message.reply_text('Starting sensorCAM...')
-		#p = subprocess.Popen(["python","/home/pi/Arduino/just-sensoring-telegram.py"],stdout=subprocess.PIPE)
-		global p
-		p = subprocess.Popen(["python","printing.py"],stdout=subprocess.PIPE)
-		#p = subprocess.Popen(sensorCAM,stdout=subprocess.PIPE)
+	        global p	
+                p = subprocess.Popen(["python","/home/pi/telegram/sensoring2telegram.py"],stdout=subprocess.PIPE)
 		update.message.reply_text(p.pid)
 	else:
 		update.message.reply_text('Sorry. Action not allowed for you')
