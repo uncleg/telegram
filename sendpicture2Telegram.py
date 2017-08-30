@@ -8,10 +8,9 @@ import ConfigParser
 
 #loading sensitive variables from config file
 config = ConfigParser.ConfigParser()
-config.read("../sensorCAM.conf")
+config.read("/etc/sensorCAM/sensorCAM.conf")
 token=config.get('Telegram','token')
 chat_id=config.get('Telegram','chat_id').split(',')
-sensorCAM = config.get('Telegram','sensorCAM')
 
 
 #setting other variables
@@ -74,24 +73,12 @@ def start(bot, update):
     	update.message.reply_text('Sorry. Action not allowed for you')
     	print type(update.message.chat_id)
 
-#@authenticate
-def capture(bot, update, args):
-    if str(update.message.chat_id) in chat_id:
-			
-    else:
-		update.message.reply_text('Sorry. Action not allowed for you')
-		print "Access not allowed"+update.message.chat_id
-    
-#camera = picamera.PiCamera()
-
-#print sensorCAM
 updater = Updater(token)
 updater.dispatcher.add_handler(CommandHandler('?', help))
 updater.dispatcher.add_handler(CommandHandler('start', start))
 updater.dispatcher.add_handler(CommandHandler('up', up_sensor))
 updater.dispatcher.add_handler(CommandHandler('down', down_sensor))
 updater.dispatcher.add_handler(CommandHandler('status', status))
-updater.dispatcher.add_handler(CommandHandler('capture', capture))
 
 updater.start_polling()
 updater.idle()
