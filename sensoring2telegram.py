@@ -16,7 +16,6 @@ config = ConfigParser.ConfigParser()
 config.read("/etc/sensorCAM/sensorCAM.conf")
 token=config.get('Telegram','token')
 chat_id=config.get('Telegram','chat_id').split(',')
-
 bot = telegram.Bot(token=token)
 
 def capture(cantidad, evento=0):
@@ -35,19 +34,20 @@ try:
     	line = ser.readline()
         data = {}	
         if "motion detected" in line:
-	 		eventID+=1
-                        start_time= strftime("%d%b%Y-%H:%M:%S", localtime())
-                        imagen_telegram=capture(5, eventID)
+            eventID+=1
+            start_time= strftime("%d%b%Y-%H:%M:%S", localtime())
+            imagen_telegram=capture(5, eventID)
         elif "motion ended" in line:
-	 	        stop_time= strftime("%d%b%Y-%H:%M:%S", localtime())	
-                        data['Description']="Movimiento detectado"
-                        data['eventID']=eventID 
-                        data['start']=start_time
-                        data['stop']=stop_time 
-                        json_data = json.dumps(data)
-                        mensaje_a_telegram=data['Description']+"Incio:"+data['start']+" Fin:"+data['stop']
-                        bot.send_message(chat_id=chat_id[0], text=mensaje_a_telegram)
-                        bot.send_photo(chat_id=chat_id[0], photo=open(imagen_telegram, 'rb'))
+            stop_time= strftime("%d%b%Y-%H:%M:%S", localtime())	
+            data['Description']="Movimiento detectado"
+            data['eventID']=eventID 
+            data['start']=start_time
+            data['stop']=stop_time 
+            json_data = json.dumps(data)
+            mensaje_a_telegram=data['Description']+"Incio:"+data['start']+" Fin:"+data['stop']
+            for chat_owner in chat_id: 
+                bot.send_message(chat_id=chat_owner, text=mensaje_a_telegram)
+                bot.send_photo(chat_id=chat_owner, photo=open(imagen_telegram, 'rb'))
 
 except KeyboardInterrupt:
         print "Exit PIR Sensoring..."	
