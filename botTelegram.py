@@ -3,8 +3,6 @@ import telegram
 import datetime
 import subprocess
 import ConfigParser
-#import picamera 
-
 
 #loading sensitive variables from config file
 config = ConfigParser.ConfigParser()
@@ -14,10 +12,9 @@ chat_id=config.get('Telegram','chat_id').split(',')
 
 
 #setting other variables
-global p
+global p 
 
 #@authenticate
-
 def help(bot, update):
 	if str(update.message.chat_id) in chat_id: 
 		update.message.reply_text('Tienes disponibles los siguientes comandos:')
@@ -31,16 +28,15 @@ def help(bot, update):
 def up_sensor(bot, update):
 	if str(update.message.chat_id) in chat_id: 
 		update.message.reply_text('Starting sensorCAM...')
-	        global p	
+       	        global p	
                 p = subprocess.Popen(["python","/home/pi/telegram/sensoring2telegram.py"],stdout=subprocess.PIPE)
 		update.message.reply_text(p.pid)
 	else:
 		update.message.reply_text('Sorry. Action not allowed for you')
-    	print "Access not allowed"+update.message.chat_id
+    	        print "Access not allowed"+update.message.chat_id
 
 def down_sensor(bot, update):
 	global p
-	print sensorCAM
 	if str(update.message.chat_id) in chat_id: 
 		update.message.reply_text('Stopping sensorCAM...')
 		#p.kill()
@@ -52,15 +48,16 @@ def down_sensor(bot, update):
 def status(bot, update):
 	global p
 	if str(update.message.chat_id) in chat_id: 
-		update.message.reply_text('sensorCAM Status:')
+		update.message.reply_text('Status:')
 		if p.poll() == None:
-			update.message.reply_text('sensorCAM Alive with PID:')
+			update.message.reply_text('sensorCAM is ALIVE with PID:')
 			update.message.reply_text(p.pid)
 		else: 
 			update.message.reply_text('sensorCAM is NOT Alive')
 	else:
 		update.message.reply_text('Sorry. Action not allowed for you')
     	print "Access not allowed"+update.message.chat_id
+
 
 #@authenticate
 def start(bot, update):
