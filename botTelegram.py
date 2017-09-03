@@ -1,3 +1,5 @@
+#!/usr/bin/python
+
 from telegram.ext import Updater, CommandHandler
 import telegram
 import datetime
