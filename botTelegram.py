@@ -12,9 +12,9 @@ config.read("/etc/sensorCAM/sensorCAM.conf")
 token=config.get('Telegram','token')
 chat_id=config.get('Telegram','chat_id').split(',')
 
-
 #setting other variables
 global p 
+senderbot = telegram.Bot(token=token)
 
 #@authenticate
 def help(bot, update):
@@ -25,7 +25,7 @@ def help(bot, update):
 		update.message.reply_text('/status  Muestra el status del sensorCAM')
 	else:
 		update.message.reply_text('Sorry. Action not allowed for you')
-    	print "Access not allowed"+update.message.chat_id
+#    	print "Access not allowed"+update.message.chat_id
 
 def up_sensor(bot, update):
 	if str(update.message.chat_id) in chat_id: 
@@ -35,17 +35,19 @@ def up_sensor(bot, update):
 		update.message.reply_text(p.pid)
 	else:
 		update.message.reply_text('Sorry. Action not allowed for you')
-    	        print "Access not allowed"+update.message.chat_id
+    #	        print "Access not allowed"+update.message.chat_id
 
 def down_sensor(bot, update):
 	global p
 	if str(update.message.chat_id) in chat_id: 
-		update.message.reply_text('Stopping sensorCAM...')
-		#p.kill()
+		user_bajador=update.message.from_user.first_name
 		p.terminate()
+		mensaje_a_telegram=user_bajador+' is Stopping sensorCAM...' 
+        for chat_owner in chat_id: 
+            senderbot.send_message(chat_id=chat_owner, text=mensaje_a_telegram)	
 	else:
-		update.message.reply_text('Sorry. Action not allowed for you')
-    	print "Access not allowed"+update.message.chat_id
+		update.message.reply_text('Sorry. Action not allowed for you'+chat_id)
+#    	print "Access not allowed"+update.message.chat_id
 
 def status(bot, update):
 	global p
@@ -58,7 +60,7 @@ def status(bot, update):
 			update.message.reply_text('sensorCAM is NOT Alive')
 	else:
 		update.message.reply_text('Sorry. Action not allowed for you')
-    	print "Access not allowed"+update.message.chat_id
+ #   	print "Access not allowed"+update.message.chat_id
 
 
 #@authenticate
@@ -68,7 +70,7 @@ def start(bot, update):
         'Hello {}. Welcome to BotAlarma!'.format(update.message.from_user.first_name))
     else: 
     	update.message.reply_text('Sorry. Action not allowed for you')
-    	print type(update.message.chat_id)
+#    	print type(update.message.chat_id)
 
 updater = Updater(token)
 updater.dispatcher.add_handler(CommandHandler('?', help))
