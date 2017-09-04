@@ -1,3 +1,4 @@
+#!/usr/bin/python
 from time import sleep #Import time library
 from time import gmtime, localtime, strftime
 import serial
@@ -29,7 +30,6 @@ def capture(cantidad, evento=0):
     return imagenes[2]
 
 try:
-    print "PIR Module Test (CTRL+C to exit)"
     while (True):
     	line = ser.readline()
         data = {}	
@@ -44,7 +44,7 @@ try:
             data['start']=start_time
             data['stop']=stop_time 
             json_data = json.dumps(data)
-            mensaje_a_telegram=data['Description']+"Incio:"+data['start']+" Fin:"+data['stop']
+            mensaje_a_telegram=data['Description']+" Incio:"+data['start']+" Fin:"+data['stop']
             for chat_owner in chat_id: 
                 bot.send_message(chat_id=chat_owner, text=mensaje_a_telegram)
                 bot.send_photo(chat_id=chat_owner, photo=open(imagen_telegram, 'rb'))

@@ -62,6 +62,19 @@ def status(bot, update):
 		update.message.reply_text('Sorry. Action not allowed for you')
  #   	print "Access not allowed"+update.message.chat_id
 
+def who(mac_address):
+	process=subprocess.Popen(["sudo","l2ping","-c 5",mac_address], stdout=subprocess.PIPE ,stderr=subprocess.STDOUT)
+	returncode = process.wait() #capturo posibles errores 
+	if returncode:
+		return " no esta en casa"
+	else: 
+		return " esta en casa"
+
+def who_is_here(bot, update):
+	for name, value in config.items('Users'):
+    	    mensaje_a_telegram=name +who(value)
+    	    update.message.reply_text(mensaje_a_telegram)
+
 
 #@authenticate
 def start(bot, update):
@@ -78,6 +91,7 @@ updater.dispatcher.add_handler(CommandHandler('start', start))
 updater.dispatcher.add_handler(CommandHandler('up', up_sensor))
 updater.dispatcher.add_handler(CommandHandler('down', down_sensor))
 updater.dispatcher.add_handler(CommandHandler('status', status))
+updater.dispatcher.add_handler(CommandHandler('who', who_is_here))
 
 updater.start_polling()
 updater.idle()
